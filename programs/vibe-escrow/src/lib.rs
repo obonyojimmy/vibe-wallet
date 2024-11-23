@@ -81,7 +81,7 @@ pub struct InitializeEscrow<'info> {
     #[account(
         init,
         payer = client,
-        seeds = [b"escrow", booking_id.as_bytes(), client.key.as_ref()],
+        seeds = [b"escrow", booking_id.as_bytes(), escort.key.as_ref()],
         bump,
         space = 8 + EscrowAccount::INIT_SPACE
     )]
@@ -100,7 +100,7 @@ pub struct ReleaseEscrow<'info> {
     #[account(
         mut,
         close = signer,
-        seeds = [b"escrow", escrow_account.booking_id.as_bytes(), escrow_account.client.as_ref()],
+        seeds = [b"escrow", escrow_account.booking_id.as_bytes(), signer.key.as_ref()],
         bump
     )]
     pub escrow_account: Account<'info, EscrowAccount>,

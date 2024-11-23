@@ -1,11 +1,13 @@
 {
+  "name": "@vibe/escrow",
+  "version": "0.0.1",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
-    "@solana/web3.js": "1.78.4",
+    "@solana/web3.js": "1.90.0",
     "assert": "*",
     "bn.js": "*"
   },
