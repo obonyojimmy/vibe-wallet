@@ -49,6 +49,7 @@ describe("Test", () => {
     //const client = pg.wallets.wallet1
 
     const escort = pg.wallets.wallet2
+    const treasury = pg.wallets.tresurry
 
     const bookingId = "booking123"; // Test booking ID
     const verifyCode = "123456";   // Test verification code
@@ -65,6 +66,7 @@ describe("Test", () => {
     .accounts({
       escrowAccount: escrowPda,
       signer: escort.publicKey,
+      treasury:  treasury.publicKey,
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .signers([escort.keypair])

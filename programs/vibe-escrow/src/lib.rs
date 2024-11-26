@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 // This is your program's public key and it will update
 // automatically when you build the project.
-declare_id!("FWsgnQwgAJBmupaxcGwDmnBBGu2epZfkKhCDyQAC4wN9");
+declare_id!("AKRsjBRDWzeq4f3X1RDGFwThxrZVsQb7PJFLE1NKR81V");
 
 #[program]
 mod vibe_escrow {
@@ -53,11 +53,20 @@ mod vibe_escrow {
             ErrorCode::InvalidVerificationCode
         );
 
-        // Send the funds to the escort
-        **ctx.accounts.signer.try_borrow_mut_lamports()? += **escrow_account.to_account_info().lamports.borrow();
-        **escrow_account.to_account_info().lamports.borrow_mut() = 0;
+        // Calculate commission (5%)
+        let total_lamports = **escrow_account.to_account_info().lamports.borrow();
+        let commission = total_lamports / 20; // 5%
+        let payout = total_lamports - commission;
+
+        // Transfer commission to the treasury
+        **ctx.accounts.treasury.to_account_info().try_borrow_mut_lamports()? += commission;
+
+        // Transfer remaining funds to the escort
+        **ctx.accounts.signer.try_borrow_mut_lamports()? += payout;
 
         // Close the PDA
+        **escrow_account.to_account_info().lamports.borrow_mut() = 0;
+
         Ok(())
     }
 }
@@ -99,7 +108,7 @@ pub struct InitializeEscrow<'info> {
 pub struct ReleaseEscrow<'info> {
     #[account(
         mut,
-        close = signer,
+        close = treasury,
         seeds = [b"escrow", escrow_account.booking_id.as_bytes(), signer.key.as_ref()],
         bump
     )]
@@ -107,6 +116,10 @@ pub struct ReleaseEscrow<'info> {
 
     #[account(mut)]
     pub signer: Signer<'info>,
+
+    #[account(mut)]
+    pub treasury: SystemAccount<'info>, // Treasury account for commission
+
 
     pub system_program: Program<'info, System>,
 }
